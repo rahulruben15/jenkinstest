@@ -1,0 +1,106 @@
+Live Kernel Patch without Rebooting
+-----------------------------------
+
+
+As a System Administrator, server uptime has much importance. The servers must be running as long as possible. While keeping this server uptime consistent, a System Administrator should also have to apply the patches and to maintain the reliability. If the patch is done for the kernel there may be a chance to reboot the kernel. Rebooting the kernel will results in the downtime of servers. The downtime will affect the business and there by it leads to the customer dissatisfaction. So here comes the importance of kernel patch without rebooting. The security patches required for the kernel is done live and without the need of rebooting.
+
+In Essence, Live kernel patching is  applying security patches to a running Linux kernel without the need for a system reboot. 
+
+Need of avoinding the rebooting.
+--------------------------------
+
+1. Patches can be applied to the kernel with less time and effort without resulting in a down time.
+
+2. Prevents security threats.
+
+3. Does not affect the business and the customers.
+
+4. Availability of the system can be maximized.
+
+5. Applies securiy patches to running linux.
+
+
+Please note that, Kernel it self should support the live patch and the system needs a client tool to retrieve kernel patches and load them.
+
+It enables system administrators to apply critical security patches to the kernel immediately, without having to wait for long-running tasks to complete, for users to log off, or for scheduled downtime. 
+
+In my blog I would like to introduce important and popular tools for the live kernel patch.
+
+1) kpatch 
+
+Kpatch
+------
+
+kpatch is a live kernel patching solution that allows you to patch a running kernel without rebooting the server or the system.
+
+Advantages of Kpatch
+---------------------
+
+1. Apply critical security patches to the kernel immediately.
+
+2. Scheduled reboot.
+
+3. control over uptime.
+
+Limitations of Kpatch
+----------------------
+
+1. The most important thing regardin the kpatch is that it is not a general purpose kernel upgrade mechanism. It is used for applying simple security and bugfix updates when rebooting the system is not immediately possible. 
+
+Requirements of Kpatch
+-----------------------
+
+A systemd service called kpatch.service that is required by multiuser.target. This service shoild be loaded while boot time and a command-line tool which allows you to manage patch modules.
+
+Steps of working with Kpatch
+----------------------------
+
+1. [root@server ~]# yum install kpatch
+
+2. [root@server ~]# yum install kpatch-patch-7.0-1.el7.x86_64.rpm
+   Loaded plugins: fastestmirror
+
+   Please note that this step will work only if Live kernel patching capability is implemented via a kernel module (kmod) that is delivered as an RPM package. The kpatch utility is used to install and remove the kernel modules for live kernel patching.
+
+3. [root@server ~]# kpatch list
+
+   This command will show a output like as follows.
+
+    Loaded patch modules:
+    kpatch_7_0_1_el7
+
+    Installed patch modules:
+
+4. If a new version of the kpatch-patch RPM package is later released, upgrade the applied patch with yum. For example, to upgrade to kpatch-patch-7.0-2.el7.x86_64.rpm, run
+
+   [root@server ~]# yum update kpatch-patch-7.0-2.el7.x86_64.rpm
+   Loaded plugins: fastestmirror
+   Loading mirror speeds from cached hostfile
+
+5. [root@server ~]# cat /proc/version
+   kernel-7.0-2-957el7
+   
+
+6. [root@server kernel-3.10.0-957.1.3.el7]# cp -r /usr/src/debug/kernel-3.10.0-957.1.3.el7/linux-3.10.0-957.1.3.el7.x86_64/* ~/linux.orig
+   [root@server kernel-3.10.0-957.1.3.el7]# cp -r ~/linux.orig/ ~/linux.kpatch
+
+7. diff -u linux.orig/fs/proc/version.c linux.kpatch/fs/proc/version.c>version.patch
+
+8. kpatch-build version.patch
+
+   This id for creating the patch module with kpatch
+
+9. [root@server ~]# sudo /usr/local/sbin/kpatch load kpatch-version.ko
+
+10. After completing the steps, you can check the version and it seems to be updates.
+
+    kernel-7.0-2-957el7
+
+
+
+
+
+
+
+
+
